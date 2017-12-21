@@ -1,0 +1,188 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{fontspec}
+\setmainfont{CMU Serif}
+\usepackage{amsmath}
+
+\usepackage{titlesec}
+\newcommand{\sectionbreak}{\clearpage}
+
+\usepackage{hyperref}
+\usepackage{minted}
+
+\title{\textbf{ОТЧЁТ}\\
+по лабораторной работе №4\\
+``Шифр Вернама''\\
+по специальности 01.03.02 Прикладная математика и информатика}
+
+\usepackage{filecontents}
+\begin{filecontents}{main.bib}
+@article{vernam1926cipher,
+  title={Cipher printing telegraph systems: For secret wire and radio telegraphic communications},
+  author={Vernam, Gilbert S},
+  journal={Journal of the AIEE},
+  volume={45},
+  number={2},
+  pages={109--115},
+  year={1926},
+  publisher={IEEE}
+}
+@misc{keyreuse@se,
+title = {Taking advantage of one-time pad key reuse?},
+url = {https://crypto.stackexchange.com/questions/59/taking-advantage-of-one-time-pad-key-reuse}
+}
+\end{filecontents}
+
+\usepackage{biblatex}
+\addbibresource{main.bib}
+
+\begin{document}
+\begin{center}
+МИНИСТЕРСТВО ОБРАЗОВАНИЯ И НАУКИ РОССИЙСКОЙ ФЕДЕРАЦИИ\\
+ФЕДЕРАЛЬНОЕ ГОСУДАРСТВЕННОЕ БЮДЖЕТНОЕ ОБРАЗОВАТЕЛЬНОЕ УЧРЕЖДЕНИЕ\\
+ВЫСШЕГО ПРОФЕССИОНАЛЬНОГО ОБРАЗОВАНИЯ\\
+``ВОРОНЕЖСКИЙ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ''\\
+(ФГБОУ ВПО ``ВГУ'')\\
+ФАКУЛЬТЕТ ПРИКЛАДНОЙ МАТЕМАТИКИ, ИНФОРМАТИКИ И МЕХАНИКИ\\
+КАФЕДРА ВЫЧИСЛИТЕЛЬНОЙ МАТЕМАТИКИ И ПРИКЛАДНЫХ ИНФОРМАЦИОННЫХ ТЕХНОЛОГИЙ
+\end{center}
+\vfill
+\begin{center}
+\textbf{ОТЧЁТ}\\
+по лабораторной работе №4\\
+``Шифр Вернама''\\
+по специальности 01.03.02 Прикладная математика и информатика
+\end{center}
+\vfill
+\begin{flushright}
+Выполнил:\\
+студент 4-го курса 6-ой группы\\
+Козлуков С.В.\\
+Проверил:\\
+доц. Воронков Б. Н.
+\end{flushright}
+\begin{center}
+Воронеж\\2017
+\end{center}
+\clearpage
+\tableofcontents
+\clearpage
+
+\section{Постановка задачи}
+\begin{itemize}
+\item Описать структуру шифра Вернама.
+\item Зашифровать и расшифровать исходный текст, используя шифр Вернама.
+\item Составить отчет о проделанной работе.
+\end{itemize}
+
+\section{Общие сведения}
+Алгоритм шифрования Вернама был реализован
+в компьютерной программе на языке Python3.
+
+\section{Описание шифра Вернама}
+Шифр Вернама --- потоковый one-time-pad шифр~\cite{vernam1926cipher}.
+Пусть дан открытый текст \( {m: \{1,\ldots, N\} \to A: i\mapsto m_i} \)
+длины \( N \) с элементами из алфавита
+\( A=\{1,\ldots, M\} \).
+Для шифрования требуется pre-shared ключ
+\( k \) такой же длины \( N \).
+Криптотекст определяется следующим образом:
+\[
+	c_i = m_i \oplus k_i.
+\]
+Для дешифрования требуется повторить операцию:
+\[
+	m_i = c_i \oplus k_i.
+\]
+
+\section{Пример работы программы}
+
+\begin{minted}{python}
+import random
+random.seed(42)
+\end{minted}
+
+\begin{minted}{python}
+msg = """It must be the law of diminishing returns...
+I feel the spell about to be broken.
+(Energizing himself somewhat.
+He takes out a coin, spins it high, catches it,
+turns it over on to the back of his other hand,
+studies the coin ---
+and tosses it to ROS.
+His energy deflates and he sits.)
+Well, it was an even chance...
+if my calculations are correct"""
+key = [random.randint(1, 255) for m in msg]
+enc = 'ascii'
+c = vernam_enc(msg, key, enc=enc)
+\end{minted}
+
+\begin{minted}{python}
+bytes(c)
+\end{minted}
+
+\begin{minted}{python}
+    b"\xedi'\xd32LN\x04\xdf~\x8e\xca\x8d\xe97\xf4\x0c~(w^\x1c\xe6\xf2j\xf9]\xd1\xd4\xdc\xe5\x02^S\xe5-\xa4\xaap\xad\xbc\x07\x9dCR\x01\x08^\x93\xa1;;l\n||\xaa)\xfe(\xa3,\xda\x14\xe5U\x8e\xcd\x15z\xae.\xb0\x81\xfd\x91\xb26\xf1\\\x9b\x18$\xefU\xa39\x9a|\xa1U\xb0}B \x1c\xce\xa5;F9{E\xc3(\xd1\x87\xc7\xc7g\xb2\xa9d\xec\x9bKK\x1c\x075\xde\x82\xd1\xc5\xafX\x907\xb7\xac\xa9#\x1b\xa0y\xa6?\x14exC\xca\x9a\xfb\x86\xd0}\x17\xcb\xe1\x12\x80\x83\xc0\x05\x05-Pl\xb5\xe4\xff6\xae\xe5N\x8f\xe2G2OA\xf1_w\xac-\xa9r\x08\xd5A\xae\x8f\x0f\xf8r\x08B\xf6\x1e\xa8)\x90\xfd\xfd\x9dw\xc7\xdcl\x8f\x8b\xeb\xaf!\xe9\xaf+i9\x14@\x10r\xd5\xcd\x89\xdcd\x9a\xee\xad@\xa2\xc71\xf2\xab,\xb6\xc0\xa2\xe8\\[\x13\xa1Y\xab\x9c\xbc\xcd\xfc\x83!\xc8\x1c-+\x17\xa64\x92\xdd\xb0\xa1*LhG\xc1\xf6\x96sz\xdd\t\xb4a\xdb\xa2\xe7\xa1\x01I\xccZ\x80\xe4_7\xa6\xc9\x96:\x92[\x82\xa7\xe2\xd2\xc5\x14\xc01\x14\xdf\xcd\xc9@\x14\x91\xe0\x1a?#Rp9e\xf2\xa0\x15\xb93ku\x96\xcfi\x1bq\x89e\xbe \x7f\xe5I!\xc3\x13D\xabC\xc8\x95\xc2\xf0\xfb\x08M\xac\x19\xbb"
+\end{minted}
+
+\begin{minted}{python}
+print(vernam_dec(c, key, decode=True))
+\end{minted}
+
+\begin{verbatim}
+    It must be the law of diminishing returns...
+    I feel the spell about to be broken.
+    (Energizing himself somewhat.
+    He takes out a coin, spins it high, catches it,
+    turns it over on to the back of his other hand,
+    studies the coin ---
+    and tosses it to ROS.
+    His energy deflates and he sits.)
+    Well, it was an even chance...
+    if my calculations are correct
+\end{verbatim}
+
+
+
+\section{Выводы}
+В ходе работы был изучен и реализован алгоритм Вернама.
+Алгоритм обеспечивает идеальную криптостойкость,
+однако неприменим в реальности из-за сложности
+распределения ключей --- ключ должен быть
+длины не меньшей длины открытого сообщения
+и должен использоваться лишь единожды.
+Также в реализации могут~\cite{vernam1926cipher}
+возникнуть сложности
+с согласованием кодировок текста.
+Повторное использование ключа
+(в том числе, "зацикливание" короткого ключа
+для использования с длинным сообщением)
+компроментирует~\cite{keyreuse@se} безопасность.
+
+\section{Список использованных источников}
+\printbibliography[heading=none]
+
+\section{Код программы}
+\begin{minted}{python}
+import itertools
+
+def vernam_enc(msg, key, enc='ascii', cycle_key=False, decode=False):
+    if isinstance(msg, str):
+        msg = msg.encode(enc)
+    if isinstance(key, str):
+        key = msg.encode(enc)
+    N = len(msg)
+    if len(key) < N and not cycle_key:
+        raise ValueError('Vernam: `key` shall be as long as `msg`')
+    key = itertools.cycle(key)
+    msg = [m^k for m, k in zip(msg, key)]
+    if decode:
+        msg = bytes(msg)
+        msg = msg.decode(enc)
+    return msg
+
+vernam_dec = vernam_enc
+\end{minted}
+\end{document}
